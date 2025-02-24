@@ -31,6 +31,8 @@ Narratives (Format - Category: Main Narrative: Sub-Narrative):
 -------------------------
 ```
 
+[Taxonomy details here](https://propaganda.math.unipd.it/semeval2025task10/NARRATIVE-TAXONOMIES.pdf)
+
 ## **Classification Process**
 1. **Category Classification:** Determines if the document belongs to:
    - "Ukraine-Russia War" (URW)

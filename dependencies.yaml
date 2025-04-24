@@ -2,9 +2,8 @@ name: H3Prompt
 channels:
   - pytorch
   - nvidia
-  - xformers
+  - conda-forge
 dependencies:
-  - python=3.12.8
-  - pytorch-cuda=12.1
-  - cudatoolkit=11.7.0
-  - xformers=0.0.29.post1
+  - python=3.11.10
+  - pytorch-cuda=12.4
+  - cudatoolkit=11.7

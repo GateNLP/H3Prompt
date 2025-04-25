@@ -1,6 +1,6 @@
-# Building Docker images and GATE Cloud apps
+# Building Docker image and GATE Cloud app
 
-The narrativre classifier is deployed on GATE Cloud via a two step process, first the classifier itself is deployed as a container that exposes an ELG-compliant API endpoint using the Flask python HTTP framework, then the GATE Cloud API endpoint is a simple GATE app that contains an ELG client PR configured to call the Python endpoint.
+The narrative classifier is deployed on GATE Cloud via a two step process, first the classifier itself is deployed as a container that exposes an ELG-compliant API endpoint using the Flask python HTTP framework, then the GATE Cloud API endpoint is a simple GATE app that contains an ELG client PR configured to call the Python endpoint.
 
 ## Building the Python classifier images
 

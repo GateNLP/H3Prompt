@@ -4,7 +4,7 @@ services:
     build: .
     restart: always
     volumes:
-      - /home/iknoor/ssd/projects/semeval25/training/unsloth/outputs_trainaug_batchfull/checkpoint-2470:/tmp/model
+#      - ./checkpoint-2470:/tmp/model
       - /data3/gate/cache/transformers/:/home/mambauser/.cache/huggingface/hub
     deploy:
       resources:

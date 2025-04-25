@@ -3,6 +3,8 @@ services:
   h3prompt:
     build: .
     restart: always
+    ports:
+      - 8169:8000
     volumes:
 #      - ./checkpoint-2470:/tmp/model
       - /data3/gate/cache/transformers/:/home/mambauser/.cache/huggingface/hub

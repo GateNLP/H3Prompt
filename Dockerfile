@@ -12,6 +12,11 @@ RUN apt-get update && apt-get install libgl1 build-essential -y
 
 USER $MAMBA_USER
 
+# this is a hack to get around the fact that otherwise the folder
+# is created owned by root possibly due to issues with the cache
+# ,moutn for creating the mamba env
+RUN mkdir /home/$MAMBA_USER/.cache
+
 WORKDIR /h3prompt
 
 # It's unlikely these will ever change so we copy them in early
@@ -30,7 +35,8 @@ RUN --mount=type=cache,target=/home/$MAMBA_USER/.cache,uid=$MAMBA_USER_ID,gid=$M
 
 # This will eventually be copying in the web service but for now just
 # pull in the demo script
-COPY demo.py README.md .
+COPY *.py README.md docker-entrypoint.sh .
 
-# This  is a hack for testing so the container doesn't immediately exit
-CMD [ "sleep", "6000" ]
+ENV WORKERS=1
+
+CMD [ "./docker-entrypoint.sh" ]

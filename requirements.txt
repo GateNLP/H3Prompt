@@ -1,3 +1,5 @@
 --extra-index-url https://download.pytorch.org/whl/cu126
 xformers
 unsloth
+elg[flask]==0.6.0
+gunicorn

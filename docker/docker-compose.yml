@@ -1,7 +1,7 @@
 
 services:
   h3prompt:
-    build: .
+    image: elg.docker.gate.ac.uk/h3prompt:latest
     restart: always
     ports:
       - 8169:8000

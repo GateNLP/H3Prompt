@@ -27,10 +27,8 @@ class H3Prompt(FlaskService):
             subnarr_final = []
             for i in range(len(predicted)):
                 narr, subnarr = predicted[i].split(" : ")
-                narr_final.append(cat_code + ": " + narr)
-                subnarr_final.append(cat_code + ": " + narr + ": " + subnarr)
-            narr_final_joined = ";".join(narr_final)
-            subnarr_final_joined = ";".join(subnarr_final)
+                narr_final.append(narr)
+                subnarr_final.append(subnarr)
         
         annotations = {}
         annotations.setdefault("Narrative", []).append(
@@ -39,11 +37,8 @@ class H3Prompt(FlaskService):
                 "end": len(request.content),
                 "features": {
                     "category": category,
-                    "main_narrative": narr_final_joined,
-                    "sub_narrative": subnarr_final_joined
-                    #"rumour_label": self.labels[predicted_class_id],
-                    #"confidence": probabilities[predicted_class_id],
-                    #"status": self.label_mapping[self.labels[predicted_class_id]]
+                    "main_narrative": narr_final,
+                    "sub_narrative": subnarr_final
                 },
             }
         )

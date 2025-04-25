@@ -26,16 +26,16 @@ COPY checkpoint-2470 Model
 
 # use the dependencies file to install a version of python we can use
 # along with the nvidia GPU stuff etc.
-COPY dependencies.yaml .
+COPY docker/dependencies.yaml .
 RUN --mount=type=cache,target=$MAMBA_ROOT_PREFIX/pkgs micromamba env create -p /h3prompt/env --file dependencies.yaml
 
 # now we install the python packages we need
-COPY requirements.txt .
+COPY docker/requirements.txt .
 RUN --mount=type=cache,target=/home/$MAMBA_USER/.cache,uid=$MAMBA_USER_ID,gid=$MAMBA_USER_ID micromamba run -p /h3prompt/env pip install -r requirements.txt
 
 # This will eventually be copying in the web service but for now just
 # pull in the demo script
-COPY *.py README.md docker-entrypoint.sh .
+COPY *.py docker/*.py /docker/docker-entrypoint.sh .
 
 ENV WORKERS=1
 

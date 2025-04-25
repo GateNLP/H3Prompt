@@ -14,6 +14,8 @@ USER $MAMBA_USER
 
 WORKDIR /h3prompt
 
+# It's unlikely these will ever change so we copy them in early
+# which should make build time ever so slightly faster
 COPY Dataset Dataset
 COPY checkpoint-2470 Model
 
@@ -26,6 +28,8 @@ RUN --mount=type=cache,target=$MAMBA_ROOT_PREFIX/pkgs micromamba env create -p /
 COPY requirements.txt .
 RUN --mount=type=cache,target=/home/$MAMBA_USER/.cache,uid=$MAMBA_USER_ID,gid=$MAMBA_USER_ID micromamba run -p /h3prompt/env pip install -r requirements.txt
 
+# This will eventually be copying in the web service but for now just
+# pull in the demo script
 COPY demo.py README.md .
 
 # This  is a hack for testing so the container doesn't immediately exit

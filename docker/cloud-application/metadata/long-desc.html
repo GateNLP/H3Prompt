@@ -1,0 +1,25 @@
+<p class="clearfix">
+
+<p>This service gives access to a narrative classifier which aims to classify news articles into a <a href="https://propaganda.math.unipd.it/semeval2025task10/NARRATIVE-TAXONOMIES.pdf">pre-defined two-level taxonomy</a> of main narratives and sub-narratives across multiple languages. We propose Hierarchical Three-Step Prompting (H3Prompt) for multilingual narrative classification.</p>
+
+<p>Our methodology follows a three-step Large Language Model (LLM) prompting strategy, where the model first categorises an article into one of two domains (Ukraine-Russia War or Climate Change), then identifies the most relevant main narratives, and finally assigns sub-narratives. Our approach secured the top position on the  <a href="https://propaganda.math.unipd.it/semeval2025task10/">SemEval 2025 Task 10</a> Subtask 2, English language test set. 
+
+<p><button class="btn btn-info" data-toggle="collapse" data-target="#ldAnnotationDetails"><i class="icon-info-sign icon-white"></i> Annotation details</button></p>
+
+<div class="collapse clearfix" id="ldAnnotationDetails">
+<table>
+  <tr>
+    <td colspan="2"><b>Default annotations</b></td>
+  </tr>
+  <tr>
+    <td><tt>:Narrative</tt></td>
+    <td>An annotation which spans the entire document and contains features describing the classification.
+      <ul>
+        <li><tt>category</tt>, the main domain of the document. For this classifier this will always be either "Ukraine-Russia War", "Climate Change", or for documents unrelated to either domain it will be "Other".</li>
+        <li><tt>main_narrative</tt>, the title of the main narrative</li>
+        <li><tt>sub_narrative</tt>, the title of the sub-narrative</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+</div>

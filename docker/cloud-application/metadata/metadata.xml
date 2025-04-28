@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://gate.ac.uk/ns/pipeline-metadata">
+  <pipeline-name>Narratives Classifier: Ukraine/Russia War and Climate Change</pipeline-name>
+  <slug>h3prompt</slug>
+  <ordering>80</ordering>
+  <annotation-selectors>:Narrative</annotation-selectors>
+  <additional-annotations></additional-annotations>
+  <tags>
+    <tag>Journalism</tag>
+    <tag>Narratives</tag>
+    <tag>Vigilant</tag>
+  </tags>
+</metadata>

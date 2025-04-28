@@ -19,29 +19,35 @@ class H3Prompt(FlaskService):
         if "ukraine" in category.lower() or "russia" in category.lower():
             category = "Ukraine-Russia War"
         cat_code = self.cat_mapping[category]
+
+        annotations = {}
+        annotations.setdefault("Narrative", [])
+
         if len(predicted) == 1 and predicted[0] == "Other : Other":
-            narr_final_joined = "Other"
-            subnarr_final_joined = "Other"
+            annotations.setdefault("Narrative", []).append({
+                "start": 0,
+                "end": len(request.content),
+                "features": {
+                    "category": category,
+                    "main_narrative": "Other",
+                    "sub_narrative": "Other"
+                },
+            })
         else:
             narr_final = []
             subnarr_final = []
             for i in range(len(predicted)):
                 narr, subnarr = predicted[i].split(" : ")
-                narr_final.append(narr)
-                subnarr_final.append(subnarr)
+                annotations.setdefault("Narrative", []).append({
+                    "start": 0,
+                    "end": len(request.content),
+                    "features": {
+                        "category": category,
+                        "main_narrative": narr,
+                        "sub_narrative": subnarr
+                    },
+                })
         
-        annotations = {}
-        annotations.setdefault("Narrative", []).append(
-            {
-                "start": 0,
-                "end": len(request.content),
-                "features": {
-                    "category": category,
-                    "main_narrative": narr_final,
-                    "sub_narrative": subnarr_final
-                },
-            }
-        )
         return AnnotationsResponse(annotations=annotations)
 
 flask_service = H3Prompt("h3prompt")

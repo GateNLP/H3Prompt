@@ -29,12 +29,12 @@ def unsloth_llm_call(prompt, model, tokenizer):
 
 def classify_category(document_text, model, tokenizer):
     prompt = f"""
-    Given the following document text, classify it into one of the two categories: "Ukraine-Russia War" or "Climate Change". 
+    Given the following document text, classify it into one of the four categories: "Ukraine-Russia War" or "Climate Change" or "Migration" or "Elections". 
 
     Document Text: 
     {document_text}
 
-    Determine the category that closely or partially fits the document. If neither category applies, return "Other". Return only the output, without any additional explanations or text.
+    Determine the category that closely or partially fits the document. If none of the categories applies, return "Other". Return only the output, without any additional explanations or text.
     """
     return unsloth_llm_call(prompt, model, tokenizer).replace('"','').replace('.','').strip()
 
@@ -81,6 +81,12 @@ def classify_document(document_text, model, tokenizer, narratives, main_narrativ
     category = classify_category(document_text, model, tokenizer)
     if category == "Other":
         final_label.append("Other : Other")
+    elif category == "Elections":
+        final_label.append("Elections : Elections")
+    elif category == "Migration":
+        final_label.append("Migration : Migration")
+    elif category == "Climate Change":
+        final_label.append("Climate Change : Climate Change")
     else:
         if category in narratives:
             main_narratives = classify_narratives(document_text, category, narratives, main_narratives_with_explanations, model, tokenizer)
@@ -116,11 +122,15 @@ def main():
         document_text = file.read()
     
     category, predicted = classify_document(document_text, model, tokenizer, narratives, main_narratives_with_explanations, sub_narratives_with_explanations)
-    cat_mapping = {"Ukraine-Russia War":"URW", "Climate Change":"CC", "Other":"Other"}
+    cat_mapping = {"Ukraine-Russia War":"URW", "Climate Change":"CC", "Migration":"M", "Elections":"E", "Other":"Other"}
     if "climate" in category.lower():
         category = "Climate Change"
     if "ukraine" in category.lower() or "russia" in category.lower():
         category = "Ukraine-Russia War"
+    if "migration" in category.lower():
+        category = "Migration"
+    if "election" in category.lower():
+        category = "Elections"
     cat_code = cat_mapping[category]
     if len(predicted) == 1 and predicted[0] == "Other : Other":
         narr_final_joined = "Other"

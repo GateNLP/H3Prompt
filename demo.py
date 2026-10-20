@@ -16,6 +16,7 @@ def load_model(model_path, max_seq_length=6000, dtype=None, load_in_4bit=False):
         load_in_4bit=load_in_4bit,
     )
     FastLanguageModel.for_inference(model)
+    model = model.to("cuda")
     return model, tokenizer
 
 
@@ -129,7 +130,7 @@ def classify_document(
     from_assistant,
 ):
     final_label = []
-    category = classify_category(document_text, model, tokenizer)
+    category = classify_category(document_text, model, tokenizer, from_assistant)
     if category == "Other":
         final_label.append("Other : Other")
     elif category == "Elections":
@@ -184,20 +185,16 @@ def main():
     args = parser.parse_args()
 
     # Load resources
-    narratives = load_json("Dataset/labels.json")
-    main_narratives_with_explanations = load_json(
-        "Dataset/main_narratives_with_explanations.json"
-    )
-    sub_narratives_with_explanations = load_json(
-        "Dataset/sub_narratives_with_explanations.json"
-    )
+    narratives = load_json('Dataset/labels.json')
+    main_narratives_with_explanations = load_json('Dataset/main_narratives_with_explanations.json')
+    sub_narratives_with_explanations = load_json('Dataset/sub_narratives_with_explanations.json')
     model, tokenizer = load_model(args.model)
 
     from_assistant = False
     with open(args.document, "r", encoding="utf-8") as file:
         document_text = file.read()
         if document_text.startswith("assistant"):
-            document_text = document_text.split("assistant")(1)
+            document_text = document_text.split("assistant")[1]
             from_assistant = True
 
     category, predicted = classify_document(

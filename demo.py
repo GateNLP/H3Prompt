@@ -38,7 +38,7 @@ def unsloth_llm_call(prompt, model, tokenizer):
     )
 
 
-def classify_category(document_text, model, tokenizer, from_assistant):
+def classify_category(document_text, model, tokenizer, four_categories):
     prompt = f"""
     Given the following document text, classify it into one of the four categories: "Ukraine-Russia War" or "Climate Change". 
 
@@ -47,7 +47,7 @@ def classify_category(document_text, model, tokenizer, from_assistant):
 
     Determine the category that closely or partially fits the document. If none of the categories applies, return "Other". Return only the output, without any additional explanations or text.
     """
-    prompt_from_assistant = f"""
+    prompt_four_categories = f"""
     Given the following document text, classify it into one of the four categories: "Ukraine-Russia War" or "Climate Change" or "Migration" or "Elections". 
 
     Document Text: 
@@ -57,7 +57,7 @@ def classify_category(document_text, model, tokenizer, from_assistant):
     """
     return (
         unsloth_llm_call(
-            prompt_from_assistant if from_assistant else prompt, model, tokenizer
+            prompt_four_categories if four_categories else prompt, model, tokenizer
         )
         .replace('"', "")
         .replace(".", "")
@@ -127,17 +127,17 @@ def classify_document(
     narratives,
     main_narratives_with_explanations,
     sub_narratives_with_explanations,
-    from_assistant,
+    four_categories,
 ):
     final_label = []
-    category = classify_category(document_text, model, tokenizer, from_assistant)
+    category = classify_category(document_text, model, tokenizer, four_categories)
     if category == "Other":
         final_label.append("Other : Other")
     elif category == "Elections":
         final_label.append("Elections : Elections")
     elif category == "Migration":
         final_label.append("Migration : Migration")
-    elif category == "Climate Change" and from_assistant:
+    elif category == "Climate Change" and four_categories:
         final_label.append("Climate Change : Climate Change")
     else:
         if category in narratives:
@@ -190,12 +190,12 @@ def main():
     sub_narratives_with_explanations = load_json('Dataset/sub_narratives_with_explanations.json')
     model, tokenizer = load_model(args.model)
 
-    from_assistant = False
+    four_categories = False
     with open(args.document, "r", encoding="utf-8") as file:
         document_text = file.read()
-        if document_text.startswith("assistant"):
-            document_text = document_text.split("assistant")[1]
-            from_assistant = True
+        if document_text.startswith("fourcategories"):
+            document_text = document_text.split("fourcategories")[1]
+            four_categories = True
 
     category, predicted = classify_document(
         document_text,
@@ -204,7 +204,7 @@ def main():
         narratives,
         main_narratives_with_explanations,
         sub_narratives_with_explanations,
-        from_assistant,
+        four_categories,
     )
     cat_mapping = {
         "Ukraine-Russia War": "URW",

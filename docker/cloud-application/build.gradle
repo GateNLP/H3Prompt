@@ -1,0 +1,61 @@
+import org.gradle.api.tasks.bundling.Zip
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+  id 'base'
+}
+
+group = 'gate.classifier'
+version = '0.1'
+
+repositories {
+  mavenCentral()
+  mavenLocal()
+  maven { url "https://repo.gate.ac.uk/content/groups/public" }
+}
+
+configurations {
+  gate
+}
+
+dependencies {
+  gate 'uk.ac.gate:gate-core:9.0.1'
+}
+
+// get sensible logs out of packagegapp
+ant.lifecycleLogLevel = "INFO"
+
+tasks.register('downloadElgClient') {
+  doLast {
+    def downloads = layout.buildDirectory.dir("downloads").get().asFile
+    ant.mkdir(dir:downloads)
+    ant.get(src:'https://gitlab.com/european-language-grid/usfd/gate-elg-client/-/package_files/281575360/download',
+            dest:new File(downloads, "gate-elg-client.zip"), skipexisting:true)
+  }
+}
+
+tasks.register('packageGapp') {
+  doLast {
+    ant.typedef(resource:'gate/util/ant/antlib.xml', classpath:configurations.gate.asPath)
+    mkdir "${buildDir}/app"
+    ant.packagegapp(src:file('src/application/application.xgapp'),
+            destfile:"${buildDir}/app/application.xgapp",
+            mavenCache:"${buildDir}/app/maven-cache.gate",
+            copyPlugins:true,
+    )
+  }
+}
+
+tasks.register('zip', Zip) {
+  dependsOn 'packageGapp', 'downloadElgClient'
+  archiveFileName = "h3prompt.zip"
+  from(file("${buildDir}/app")) {
+    filter(ReplaceTokens, tokens: [ELG_ENDPOINT: project.properties.elgEndpoint])
+  }
+  into("plugins") {
+    from(zipTree(layout.buildDirectory.file("downloads/gate-elg-client.zip")))
+  }
+  from(file("src/metadata")) {
+    into "metadata"
+  }
+}

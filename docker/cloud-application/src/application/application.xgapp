@@ -1,0 +1,63 @@
+<gate.util.persistence.GateApplication>
+  <urlList class="gate.util.persistence.CollectionPersistence">
+    <localList>
+      <gate.util.persistence.PersistenceManager-URLHolder>
+        <urlString>$relpath$plugins/gate-elg-client-0.3/</urlString>
+      </gate.util.persistence.PersistenceManager-URLHolder>
+      <gate.creole.Plugin-Maven>
+        <group>uk.ac.gate.plugins</group>
+        <artifact>groovy</artifact>
+        <version>8.6</version>
+      </gate.creole.Plugin-Maven>
+    </localList>
+    <collectionType>java.util.ArrayList</collectionType>
+  </urlList>
+  <application class="gate.groovy.ScriptableControllerPersistence">
+    <controlScript class="string">eachDocument {
+  def fourCatParam = doc.features.&apos;gate.cloud.queryParameters&apos;?.get(&apos;four_categories&apos;)
+  
+  elgClient(requestParams: Utils.featureMap(
+     &apos;four_categories&apos;,
+     (fourCatParam &amp;&amp; (fourCatParam == "1" || fourCatParam == "yes" || fourCatParam == "true")) ?: false
+  ))
+}</controlScript>
+    <prList class="gate.util.persistence.CollectionPersistence">
+      <localList>
+        <gate.util.persistence.LanguageAnalyserPersistence>
+          <runtimeParams class="gate.util.persistence.MapPersistence">
+            <mapType>gate.util.SimpleFeatureMapImpl</mapType>
+            <localMap>
+              <entry>
+                <string>serviceUrl</string>
+                <gate.util.persistence.PersistenceManager-URLHolder>
+                  <urlString>@ELG_ENDPOINT@</urlString>
+                </gate.util.persistence.PersistenceManager-URLHolder>
+              </entry>
+            </localMap>
+          </runtimeParams>
+          <resourceType>gate.elg.client.ElgClientPR</resourceType>
+          <resourceName>elgClient</resourceName>
+          <initParams class="gate.util.persistence.MapPersistence">
+            <mapType>gate.util.SimpleFeatureMapImpl</mapType>
+            <localMap/>
+          </initParams>
+          <features class="gate.util.persistence.MapPersistence">
+            <mapType>gate.util.SimpleFeatureMapImpl</mapType>
+            <localMap/>
+          </features>
+        </gate.util.persistence.LanguageAnalyserPersistence>
+      </localList>
+      <collectionType>java.util.ArrayList</collectionType>
+    </prList>
+    <resourceType>gate.groovy.ScriptableController</resourceType>
+    <resourceName>H3Prompt (ELG)</resourceName>
+    <initParams class="gate.util.persistence.MapPersistence">
+      <mapType>gate.util.SimpleFeatureMapImpl</mapType>
+      <localMap/>
+    </initParams>
+    <features class="gate.util.persistence.MapPersistence">
+      <mapType>gate.util.SimpleFeatureMapImpl</mapType>
+      <localMap/>
+    </features>
+  </application>
+</gate.util.persistence.GateApplication>

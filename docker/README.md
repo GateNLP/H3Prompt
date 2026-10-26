@@ -12,3 +12,16 @@ The Python-based classifier can be built using the `./build.sh` script in this d
 
 Any arguments will be passed through to the `docker buildx` command, allowing you to specify things like `--push`, `--platform`, etc. as required.
 
+## Building the GATE Cloud application
+
+To build the wrapper application for GATE Cloud, you need an installation of Java, as the build process uses Gradle.  In the `cloud-application` folder, run
+
+```
+./gradlew zip
+```
+
+This will download the necessary plugins and assemble the final zip file in `build/distributions`.  If you need to override the default endpoint for the ELG service, use `-PelgEndpoint`, e.g.
+
+```
+./gradlew zip -PelgEndpoint=http://example.com/process
+```

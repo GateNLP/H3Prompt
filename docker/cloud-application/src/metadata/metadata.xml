@@ -5,6 +5,7 @@
   <ordering>80</ordering>
   <annotation-selectors>:Narrative</annotation-selectors>
   <additional-annotations></additional-annotations>
+  <gate-version>9.0.1</gate-version>
   <tags>
     <tag>Journalism</tag>
     <tag>Narratives</tag>

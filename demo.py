@@ -45,7 +45,7 @@ def classify_category(document_text, model, tokenizer, four_categories):
     Document Text: 
     {document_text}
 
-    Determine the category that closely or partially fits the document. If none of the categories applies, return "Other". Return only the output, without any additional explanations or text.
+    Determine the category that closely or partially fits the document. If neither category applies, return "Other". Return only the output, without any additional explanations or text.
     """
     prompt_four_categories = f"""
     Given the following document text, classify it into one of the four categories: "Ukraine-Russia War" or "Climate Change" or "Migration" or "Elections". 

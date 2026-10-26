@@ -10,14 +10,19 @@ class H3Prompt(FlaskService):
     sub_narratives_with_explanations = demo.load_json('Dataset/sub_narratives_with_explanations.json')
     model, tokenizer = demo.load_model("Model")
 
-    cat_mapping = {"Ukraine-Russia War":"URW", "Climate Change":"CC", "Other":"Other"}
+    cat_mapping = {"Ukraine-Russia War":"URW", "Climate Change":"CC", "Migration":"M", "Elections":"E", "Other":"Other"}
 
     def process_text(self, request):
-        category, predicted = demo.classify_document(request.content, self.model, self.tokenizer, self.narratives, self.main_narratives_with_explanations, self.sub_narratives_with_explanations)
+        four_categories = bool(request.params and request.params.get("four_categories"))
+        category, predicted = demo.classify_document(request.content, self.model, self.tokenizer, self.narratives, self.main_narratives_with_explanations, self.sub_narratives_with_explanations, four_categories)
         if "climate" in category.lower():
             category = "Climate Change"
         if "ukraine" in category.lower() or "russia" in category.lower():
             category = "Ukraine-Russia War"
+        if "migration" in category.lower():
+            category = "Migration"
+        if "election" in category.lower():
+            category = "Elections"
         cat_code = self.cat_mapping[category]
 
         annotations = {}

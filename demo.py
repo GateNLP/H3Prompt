@@ -2,9 +2,11 @@ import json
 import argparse
 from unsloth import FastLanguageModel
 
+
 def load_json(file_path):
-    with open(file_path, 'r', encoding='utf-8') as json_file:
+    with open(file_path, "r", encoding="utf-8") as json_file:
         return json.load(json_file)
+
 
 def load_model(model_path, max_seq_length=6000, dtype=None, load_in_4bit=False):
     model, tokenizer = FastLanguageModel.from_pretrained(
@@ -14,7 +16,9 @@ def load_model(model_path, max_seq_length=6000, dtype=None, load_in_4bit=False):
         load_in_4bit=load_in_4bit,
     )
     FastLanguageModel.for_inference(model)
+    model = model.to("cuda")
     return model, tokenizer
+
 
 def unsloth_llm_call(prompt, model, tokenizer):
     messages = [{"role": "user", "content": prompt}]
@@ -24,10 +28,17 @@ def unsloth_llm_call(prompt, model, tokenizer):
         add_generation_prompt=True,
         return_tensors="pt",
     ).to("cuda")
-    outputs = model.generate(input_ids=inputs, max_new_tokens=500, use_cache=True, do_sample=False)
-    return tokenizer.batch_decode(outputs)[0].split("<|start_header_id|>assistant<|end_header_id|>")[-1][:-10].strip()
+    outputs = model.generate(
+        input_ids=inputs, max_new_tokens=500, use_cache=True, do_sample=False
+    )
+    return (
+        tokenizer.batch_decode(outputs)[0]
+        .split("<|start_header_id|>assistant<|end_header_id|>")[-1][:-10]
+        .strip()
+    )
 
-def classify_category(document_text, model, tokenizer):
+
+def classify_category(document_text, model, tokenizer, four_categories):
     prompt = f"""
     Given the following document text, classify it into one of the two categories: "Ukraine-Russia War" or "Climate Change". 
 
@@ -36,11 +47,34 @@ def classify_category(document_text, model, tokenizer):
 
     Determine the category that closely or partially fits the document. If neither category applies, return "Other". Return only the output, without any additional explanations or text.
     """
-    return unsloth_llm_call(prompt, model, tokenizer).replace('"','').replace('.','').strip()
+    prompt_four_categories = f"""
+    Given the following document text, classify it into one of the four categories: "Ukraine-Russia War" or "Climate Change" or "Migration" or "Elections". 
 
-def classify_narratives(document_text, category, narratives, main_narratives_with_explanations, model, tokenizer):
+    Document Text: 
+    {document_text}
+
+    Determine the category that closely or partially fits the document. If none of the categories applies, return "Other". Return only the output, without any additional explanations or text.
+    """
+    return (
+        unsloth_llm_call(
+            prompt_four_categories if four_categories else prompt, model, tokenizer
+        )
+        .replace('"', "")
+        .replace(".", "")
+        .strip()
+    )
+
+
+def classify_narratives(
+    document_text,
+    category,
+    narratives,
+    main_narratives_with_explanations,
+    model,
+    tokenizer,
+):
     narratives_list_with_explanations = "\n".join(
-        f'- {narrative}: {main_narratives_with_explanations[narrative]}'
+        f"- {narrative}: {main_narratives_with_explanations[narrative]}"
         for narrative in narratives[category]
     )
     prompt = f"""
@@ -56,11 +90,20 @@ def classify_narratives(document_text, category, narratives, main_narratives_wit
     """
     return unsloth_llm_call(prompt, model, tokenizer)
 
-def classify_sub_narrative(document_text, category, main_narrative, narratives, sub_narratives_with_explanations, model, tokenizer):
+
+def classify_sub_narrative(
+    document_text,
+    category,
+    main_narrative,
+    narratives,
+    sub_narratives_with_explanations,
+    model,
+    tokenizer,
+):
     if main_narrative == "Hidden plots by secret schemes of powerful groups":
         return "Other"
     sub_narratives_list_with_explanations = "\n".join(
-        f'- {sub_narrative}: {sub_narratives_with_explanations[sub_narrative]}'
+        f"- {sub_narrative}: {sub_narratives_with_explanations[sub_narrative]}"
         for sub_narrative in narratives[category][main_narrative]
     )
     prompt = f"""
@@ -76,23 +119,57 @@ def classify_sub_narrative(document_text, category, main_narrative, narratives, 
     """
     return unsloth_llm_call(prompt, model, tokenizer)
 
-def classify_document(document_text, model, tokenizer, narratives, main_narratives_with_explanations, sub_narratives_with_explanations):
+
+def classify_document(
+    document_text,
+    model,
+    tokenizer,
+    narratives,
+    main_narratives_with_explanations,
+    sub_narratives_with_explanations,
+    four_categories,
+):
     final_label = []
-    category = classify_category(document_text, model, tokenizer)
+    category = classify_category(document_text, model, tokenizer, four_categories)
     if category == "Other":
         final_label.append("Other : Other")
+    elif category == "Elections":
+        final_label.append("Elections : Elections")
+    elif category == "Migration":
+        final_label.append("Migration : Migration")
+    elif category == "Climate Change" and four_categories:
+        final_label.append("Climate Change : Climate Change")
     else:
         if category in narratives:
-            main_narratives = classify_narratives(document_text, category, narratives, main_narratives_with_explanations, model, tokenizer)
+            main_narratives = classify_narratives(
+                document_text,
+                category,
+                narratives,
+                main_narratives_with_explanations,
+                model,
+                tokenizer,
+            )
             if main_narratives == "Other":
                 final_label.append("Other : Other")
             else:
-                main_narratives_list = [it.strip("-").strip() for it in main_narratives.split("#")]
+                main_narratives_list = [
+                    it.strip("-").strip() for it in main_narratives.split("#")
+                ]
                 all_sub_narratives = {}
                 for main_narrative in main_narratives_list:
                     if main_narrative in narratives[category]:
-                        sub_narratives = classify_sub_narrative(document_text, category, main_narrative, narratives, sub_narratives_with_explanations, model, tokenizer)
-                        sub_narratives_list = [sub.strip("-").strip() for sub in sub_narratives.split("#")]
+                        sub_narratives = classify_sub_narrative(
+                            document_text,
+                            category,
+                            main_narrative,
+                            narratives,
+                            sub_narratives_with_explanations,
+                            model,
+                            tokenizer,
+                        )
+                        sub_narratives_list = [
+                            sub.strip("-").strip() for sub in sub_narratives.split("#")
+                        ]
                         all_sub_narratives[main_narrative] = sub_narratives_list
                 for main, subs in all_sub_narratives.items():
                     for sub in subs:
@@ -100,27 +177,50 @@ def classify_document(document_text, model, tokenizer, narratives, main_narrativ
                             final_label.append(f"{main} : {sub}")
     return [category, final_label] if final_label else ["Other", ["Other : Other"]]
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("document", type=str, help="Path to the document file")
     parser.add_argument("model", type=str, help="Path to the fine-tuned model")
     args = parser.parse_args()
-    
+
     # Load resources
     narratives = load_json('Dataset/labels.json')
     main_narratives_with_explanations = load_json('Dataset/main_narratives_with_explanations.json')
     sub_narratives_with_explanations = load_json('Dataset/sub_narratives_with_explanations.json')
     model, tokenizer = load_model(args.model)
-    
-    with open(args.document, 'r', encoding='utf-8') as file:
+
+    four_categories = False
+    with open(args.document, "r", encoding="utf-8") as file:
         document_text = file.read()
-    
-    category, predicted = classify_document(document_text, model, tokenizer, narratives, main_narratives_with_explanations, sub_narratives_with_explanations)
-    cat_mapping = {"Ukraine-Russia War":"URW", "Climate Change":"CC", "Other":"Other"}
+        if document_text.startswith("fourcategories"):
+            document_text = document_text.split("fourcategories")[1]
+            four_categories = True
+
+    category, predicted = classify_document(
+        document_text,
+        model,
+        tokenizer,
+        narratives,
+        main_narratives_with_explanations,
+        sub_narratives_with_explanations,
+        four_categories,
+    )
+    cat_mapping = {
+        "Ukraine-Russia War": "URW",
+        "Climate Change": "CC",
+        "Migration": "M",
+        "Elections": "E",
+        "Other": "Other",
+    }
     if "climate" in category.lower():
         category = "Climate Change"
     if "ukraine" in category.lower() or "russia" in category.lower():
         category = "Ukraine-Russia War"
+    if "migration" in category.lower():
+        category = "Migration"
+    if "election" in category.lower():
+        category = "Elections"
     cat_code = cat_mapping[category]
     if len(predicted) == 1 and predicted[0] == "Other : Other":
         narr_final_joined = "Other"
@@ -138,10 +238,11 @@ def main():
     print("Filename: ", args.document)
     print("Category: ", category)
     print("Narrative (Format -> Category: Main Narrative: Sub-Narrative): ")
-    line = f"{args.document}\t{narr_final_joined}\t{subnarr_final_joined}" #output format needed for semeval task
+    line = f"{args.document}\t{narr_final_joined}\t{subnarr_final_joined}"  # output format needed for semeval task
     extract_narratives = line.split("\t")[-1].strip().split(";")
     for it in extract_narratives:
         print(it)
+
 
 if __name__ == "__main__":
     main()

@@ -40,7 +40,7 @@ def unsloth_llm_call(prompt, model, tokenizer):
 
 def classify_category(document_text, model, tokenizer, four_categories):
     prompt = f"""
-    Given the following document text, classify it into one of the four categories: "Ukraine-Russia War" or "Climate Change". 
+    Given the following document text, classify it into one of the two categories: "Ukraine-Russia War" or "Climate Change". 
 
     Document Text: 
     {document_text}

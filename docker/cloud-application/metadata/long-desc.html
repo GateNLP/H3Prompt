@@ -2,7 +2,9 @@
 
 <p>This service gives access to a narrative classifier which aims to classify news articles into a <a href="https://propaganda.math.unipd.it/semeval2025task10/NARRATIVE-TAXONOMIES.pdf">pre-defined two-level taxonomy</a> of main narratives and sub-narratives across multiple languages. We propose Hierarchical Three-Step Prompting (H3Prompt) for multilingual narrative classification.</p>
 
-<p>Our methodology follows a three-step Large Language Model (LLM) prompting strategy, where the model first categorises an article into one of two domains (Ukraine-Russia War or Climate Change), then identifies the most relevant main narratives, and finally assigns sub-narratives. Our approach secured the top position on the  <a href="https://propaganda.math.unipd.it/semeval2025task10/">SemEval 2025 Task 10</a> Subtask 2, English language test set. 
+<p>Our methodology follows a three-step Large Language Model (LLM) prompting strategy, where the model first categorises an article into one of two domains (Ukraine-Russia War or Climate Change), then identifies the most relevant main narratives, and finally assigns sub-narratives. Our approach secured the top position on the  <a href="https://propaganda.math.unipd.it/semeval2025task10/">SemEval 2025 Task 10</a> Subtask 2, English language test set. </p>
+
+<p>The code has been adpated to alternatively categorise an article into one of four domains (Ukraine-Russia War, Climate Change, Elections or Migration) when `fourcatgories` is presented as the first characters of the text. The text will only be categorised into subnarratives for the domain Ukraine-Russia War, otherwise it will return the main narrative only.</p>
 
 <p><button class="btn btn-info" data-toggle="collapse" data-target="#ldAnnotationDetails"><i class="icon-info-sign icon-white"></i> Annotation details</button></p>
 

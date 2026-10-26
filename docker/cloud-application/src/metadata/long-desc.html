@@ -4,6 +4,12 @@
 
 <p>Our methodology follows a three-step Large Language Model (LLM) prompting strategy, where the model first categorises an article into one of two domains (Ukraine-Russia War or Climate Change), then identifies the most relevant main narratives, and finally assigns sub-narratives. Our approach secured the top position on the  <a href="https://propaganda.math.unipd.it/semeval2025task10/">SemEval 2025 Task 10</a> Subtask 2, English language test set. 
 
+<details>
+  <summary class="h6">Advanced usage</summary>
+  <p>The service has an alternative mode where it can be asked to choose between <em>four</em> top-level categories rater than two.  In this mode the usual categories of Ukraine-Russia War or Climate Change are extended with two more, Elections and Migration. Only the Ukraine-Russia War category will be passed to the second- and third-level classifiers, the other domains will simply be returned as a single top-level classification.  This mode is intended for use when other classifiers are available that can more finely distinguish narratives in the other domains.</p>
+  <p>To request this mode, the caller must pass an additional query parameter <code>?four_categories=true</code> on the REST endpoint URL, so it is not available via the testing form below.</p>
+</details>
+
 <p><button class="btn btn-info" data-toggle="collapse" data-target="#ldAnnotationDetails"><i class="icon-info-sign icon-white"></i> Annotation details</button></p>
 
 <div class="collapse clearfix" id="ldAnnotationDetails">

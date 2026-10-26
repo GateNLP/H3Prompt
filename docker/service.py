@@ -19,6 +19,10 @@ class H3Prompt(FlaskService):
             category = "Climate Change"
         if "ukraine" in category.lower() or "russia" in category.lower():
             category = "Ukraine-Russia War"
+        if "migration" in category.lower():
+            category = "Migration"
+        if "election" in category.lower():
+            category = "Elections"
         cat_code = self.cat_mapping[category]
 
         annotations = {}

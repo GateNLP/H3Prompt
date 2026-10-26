@@ -13,7 +13,8 @@ class H3Prompt(FlaskService):
     cat_mapping = {"Ukraine-Russia War":"URW", "Climate Change":"CC", "Migration":"M", "Elections":"E", "Other":"Other"}
 
     def process_text(self, request):
-        category, predicted = demo.classify_document(request.content, self.model, self.tokenizer, self.narratives, self.main_narratives_with_explanations, self.sub_narratives_with_explanations)
+        four_categories = bool(request.params and request.params.get("four_categories"))
+        category, predicted = demo.classify_document(request.content, self.model, self.tokenizer, self.narratives, self.main_narratives_with_explanations, self.sub_narratives_with_explanations, four_categories)
         if "climate" in category.lower():
             category = "Climate Change"
         if "ukraine" in category.lower() or "russia" in category.lower():

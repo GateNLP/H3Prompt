@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata xmlns="http://gate.ac.uk/ns/pipeline-metadata">
-  <pipeline-name>Narratives Classifier: Ukraine/Russia War, Climate Change, Elections and Migration</pipeline-name>
+  <pipeline-name>Narratives Classifier: Ukraine/Russia War and Climate Change</pipeline-name>
   <slug>war-or-climate-narratives</slug>
   <ordering>80</ordering>
   <annotation-selectors>:Narrative</annotation-selectors>

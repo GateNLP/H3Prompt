@@ -48,7 +48,7 @@ tasks.register('packageGapp') {
 
 tasks.register('zip', Zip) {
   dependsOn 'packageGapp', 'downloadElgClient'
-  archiveFileName = "h3prompt.zip"
+  archiveFileName = "war-or-climate-narratives.zip"
   from(file("${buildDir}/app")) {
     filter(ReplaceTokens, tokens: [ELG_ENDPOINT: project.properties.elgEndpoint])
   }
